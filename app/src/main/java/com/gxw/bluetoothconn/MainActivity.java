@@ -3,6 +3,7 @@ package com.gxw.bluetoothconn;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +15,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -24,7 +27,10 @@ import com.gxw.bluetoothconn.utils.MacUtil;
 import java.util.ArrayList;
 import java.util.Set;
 
-public class MainActivity extends AppCompatActivity {
+/**
+ * The type Main activity.
+ */
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
     private String TAG = MainActivity.class.getName().toString();
 
@@ -32,12 +38,14 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_ENABLE_BT = 3;
 
     private BluetoothAdapter mAdapter;
+    private BluetoothManager bluetoothManager;
+
     private ArrayAdapter<String> arrayAdapter, arrayAdapterCouldConn;
     private ListView lv_already_conn, lv_could_conn;
     private TextView tv_local_info;
-
     private ArrayList<String> deviceCouldConn, deviceCouldConnTemp;
 
+    //region handler
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -53,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+    //endregion
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
         arrayAdapterCouldConn = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, deviceCouldConn);
 
         lv_could_conn.setAdapter(arrayAdapterCouldConn);
+        lv_could_conn.setOnItemClickListener(this);
 
         /**
          * 判断是否支持蓝牙设备
@@ -94,6 +104,8 @@ public class MainActivity extends AppCompatActivity {
     /**
      * A native method that is implemented by the 'native-lib' native library,
      * which is packaged with this application.
+     *
+     * @return the string
      */
     public native String stringFromJNI();
 
@@ -159,13 +171,20 @@ public class MainActivity extends AppCompatActivity {
         unregisterReceiver(mBluetoothReceiver);
     }
 
+    /**
+     * 初始化蓝牙信息
+     *
+     * @param mBluetoothAdapter
+     */
     private void localBlueToothInfo(BluetoothAdapter mBluetoothAdapter) {
 
         //开启可见性
         initBlueToothCouldBeSee();
+        //获取蓝牙操作类
+        initBlueToothManager();
         //注册广播监听器
         initBroadCast();
-        //开启扫描
+        //开启扫描 6.0以上必须加入定位权限，不然扫描不到设备
         mAdapter.startDiscovery();
         //获取本机蓝牙名称
         String name = mBluetoothAdapter.getName();
@@ -202,12 +221,10 @@ public class MainActivity extends AppCompatActivity {
         lv_already_conn.setAdapter(arrayAdapter);
     }
 
+    /**
+     * 开启蓝牙可见性
+     */
     private void initBlueToothCouldBeSee() {
-//        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-//        registerReceiver(mBluetoothReceiver, filter);
-//        filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-//        registerReceiver(mBluetoothReceiver, filter);
-
         if (mAdapter.getScanMode() != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
             Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
             //有时候扫描不到某设备，这是因为该设备对外不可见或者距离远，需要设备该蓝牙可见，这样该才能被搜索到。可见时间默认值为120s，最多可设置300。
@@ -217,6 +234,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * 注册广播
+     */
     private void initBroadCast() {
         IntentFilter filter = new IntentFilter();
         //发现设备
@@ -230,6 +250,12 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(mBluetoothReceiver, filter);
     }
 
+    private void initBlueToothManager() {
+        //首先获取BluetoothManager
+        bluetoothManager = (BluetoothManager) MainActivity.this.getSystemService(Context.BLUETOOTH_SERVICE);
+    }
+
+    //region 广播
     private BroadcastReceiver mBluetoothReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -244,9 +270,31 @@ public class MainActivity extends AppCompatActivity {
                 handler.sendEmptyMessage(0x0001);
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
 
+            } else if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+//                switch (device.getBondState()) {
+//                    case BluetoothDevice.BOND_BONDING://正在配对
+//                        Log.d("BlueToothTestActivity", "正在配对......");
+//                        onRegisterBltReceiver.onBltIng(device);
+//                        break;
+//                    case BluetoothDevice.BOND_BONDED://配对结束
+//                        Log.d("BlueToothTestActivity", "完成配对");
+//                        onRegisterBltReceiver.onBltEnd(device);
+//                        break;
+//                    case BluetoothDevice.BOND_NONE://取消配对/未配对
+//                        Log.d("BlueToothTestActivity", "取消配对");
+//                        onRegisterBltReceiver.onBltNone(device);
+//                    default:
+//                        break;
+//                }
             }
         }
 
     };
 
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+    }
+    //endregion
 }
