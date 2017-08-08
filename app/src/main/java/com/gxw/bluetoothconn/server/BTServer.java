@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 
 import com.gxw.bluetoothconn.Constants;
+import com.gxw.bluetoothconn.MyApplication;
 
 import java.io.IOException;
 
@@ -48,7 +49,7 @@ public class BTServer {
                 //这里会线程阻塞，直到有蓝牙设备链接进来才会往下走
                 BluetoothSocket socket = bluetoothServerSocket.accept();
                 if (socket != null) {
-//                    BltAppliaction.bluetoothSocket = socket;
+                    MyApplication.bluetoothSocket = socket;
                     //回调结果通知
                     Message message = new Message();
                     message.what = 0x0003;

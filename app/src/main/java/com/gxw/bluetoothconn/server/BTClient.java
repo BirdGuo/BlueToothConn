@@ -8,6 +8,7 @@ import android.os.Message;
 import android.util.Log;
 
 import com.gxw.bluetoothconn.Constants;
+import com.gxw.bluetoothconn.MyApplication;
 
 import java.io.IOException;
 
@@ -53,7 +54,7 @@ public class BTClient {
             mBluetoothSocket = btDev.createRfcommSocketToServiceRecord(Constants.SPP_UUID);
             if (mBluetoothSocket != null)
                 //全局只有一个bluetooth，所以我们可以将这个socket对象保存在appliaction中
-//                BltAppliaction.bluetoothSocket = mBluetoothSocket;
+                MyApplication.bluetoothSocket = mBluetoothSocket;
                 //通过反射得到bltSocket对象，与uuid进行连接得到的结果一样，但这里不提倡用反射的方法
                 //mBluetoothSocket = (BluetoothSocket) btDev.getClass().getMethod("createRfcommSocket", new Class[]{int.class}).invoke(btDev, 1);
                 Log.d("blueTooth", "开始连接...");

@@ -71,10 +71,16 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     BluetoothDevice device = (BluetoothDevice) msg.obj;
                     tv_conn_info.setText("设备" + device.getName() + "已经接入");
                     Toast.makeText(MainActivity.this, "设备" + device.getName() + "已经接入", Toast.LENGTH_LONG).show();
-//                    Intent intent = new Intent(MainActivity.this, BltSocketAcivity.class);
-//                    startActivity(intent);
+                    Intent intent = new Intent(MainActivity.this, DeviceDetailActivity.class);
+                    startActivity(intent);
                     break;
                 case 0x0004:
+                    tv_conn_info.setVisibility(View.VISIBLE);
+                    BluetoothDevice device1 = (BluetoothDevice) msg.obj;
+                    tv_conn_info.setText("设备" + device1.getName() + "已经接入");
+                    Toast.makeText(MainActivity.this, "设备" + device1.getName() + "已经接入", Toast.LENGTH_LONG).show();
+                    Intent intent1 = new Intent(MainActivity.this, DeviceDetailActivity.class);
+                    startActivity(intent1);
                     break;
             }
         }
@@ -194,6 +200,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         super.onDestroy();
         Log.i(TAG, "--------------onDestroy------------");
         mAdapter.cancelDiscovery();
+
         unregisterReceiver(mBluetoothReceiver);
     }
 

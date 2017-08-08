@@ -7,6 +7,43 @@
     android:orientation="vertical"
     tools:context="com.gxw.bluetoothconn.DeviceDetailActivity">
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:id="@+id/ll_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/et_detail"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.8"/>
+
+        <Button
+            android:id="@+id/btn_detail_send_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="发送"/>
+
+        <Button
+            android:id="@+id/btn_detail_send_file"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="发文件"/>
+    </LinearLayout>
 
 
 </LinearLayout>
