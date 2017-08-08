@@ -59,9 +59,10 @@ public class BTClient {
                 //mBluetoothSocket = (BluetoothSocket) btDev.getClass().getMethod("createRfcommSocket", new Class[]{int.class}).invoke(btDev, 1);
                 Log.d("blueTooth", "开始连接...");
             //在建立之前调用
-            if (bluetoothAdapter.isDiscovering())
+            if (bluetoothAdapter.isDiscovering()){
                 //停止搜索
                 bluetoothAdapter.cancelDiscovery();
+            }
             //如果当前socket处于非连接状态则调用连接
             if (!mBluetoothSocket.isConnected()) {
                 //你应当确保在调用connect()时设备没有执行搜索设备的操作。

@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothSocket;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
@@ -21,6 +22,8 @@ import java.io.InputStreamReader;
 
 public class ReceiveMessageUtil {
 
+    private static String TAG = ReceiveMessageUtil.class.getName().toString();
+
     /**
      * 接收消息
      *
@@ -34,16 +37,13 @@ public class ReceiveMessageUtil {
             // 从客户端获取信息
             BufferedReader bff = new BufferedReader(new InputStreamReader(inputStream));
             String json;
-
             while (true) {
                 while ((json = bff.readLine()) != null) {
+                    Log.i(TAG, "json:" + json);
                     Message message = new Message();
-                    message.obj = json;
-                    message.what = 1;
-                    handler.sendMessage(message);
                     //说明接下来会接收到一个文件流
                     if ("file".equals(json)) {
-                        FileOutputStream fos = new FileOutputStream(Environment.getExternalStorageDirectory() + "/test.gif");
+                        FileOutputStream fos = new FileOutputStream(Environment.getExternalStorageDirectory() + "/yundou.3gp");
                         int length;
                         int fileSzie = 0;
                         byte[] b = new byte[1024];
@@ -51,12 +51,16 @@ public class ReceiveMessageUtil {
                         while ((length = inputStream.read(b)) != -1) {
                             fos.write(b, 0, length);
                             fileSzie += length;
-                            System.out.println("当前大小：" + fileSzie);
+                            Log.i(TAG, "当前大小：" + fileSzie);
                             //这里通过先前传递过来的文件大小作为参照，因为该文件流不能自主停止，所以通过判断文件大小来跳出循环
                         }
                         fos.close();
                         message.obj = "文件:保存成功";
                         message.what = 2;
+                        handler.sendMessage(message);
+                    } else {
+                        message.obj = json;
+                        message.what = 1;
                         handler.sendMessage(message);
                     }
                 }

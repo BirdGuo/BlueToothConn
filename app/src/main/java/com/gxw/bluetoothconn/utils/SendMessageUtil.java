@@ -19,6 +19,8 @@ import java.io.OutputStream;
 
 public class SendMessageUtil {
 
+    private static String TAG = SendMessageUtil.class.getName().toString();
+
     /**
      * 发送文本消息
      *
@@ -53,6 +55,8 @@ public class SendMessageUtil {
             if (!file.exists()) return;
             //说明该文件是一个文件夹
             if (file.isDirectory()) return;
+
+            Log.i(TAG, "file size:" + file.length());
             //1、发送文件信息实体类
             outputStream.write("file".getBytes("utf-8"));
             //将文件写入流
