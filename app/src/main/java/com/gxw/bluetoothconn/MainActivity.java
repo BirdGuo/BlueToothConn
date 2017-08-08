@@ -18,10 +18,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gxw.bluetoothconn.server.BTClient;
+import com.gxw.bluetoothconn.server.BTServer;
 import com.gxw.bluetoothconn.utils.MacUtil;
 
 import java.util.ArrayList;
@@ -30,7 +33,7 @@ import java.util.Set;
 /**
  * The type Main activity.
  */
-public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, View.OnClickListener {
 
     private String TAG = MainActivity.class.getName().toString();
 
@@ -39,11 +42,16 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     private BluetoothAdapter mAdapter;
     private BluetoothManager bluetoothManager;
+    private BTServer btServer;
 
     private ArrayAdapter<String> arrayAdapter, arrayAdapterCouldConn;
+
     private ListView lv_already_conn, lv_could_conn;
-    private TextView tv_local_info;
+    private TextView tv_local_info, tv_conn_info;
+    private Button btn_open_server;
+
     private ArrayList<String> deviceCouldConn, deviceCouldConnTemp;
+    private ArrayList<BluetoothDevice> bluetoothDevices;
 
     //region handler
     private Handler handler = new Handler() {
@@ -57,6 +65,16 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     deviceCouldConn.addAll(deviceCouldConnTemp);
 
                     arrayAdapterCouldConn.notifyDataSetChanged();
+                    break;
+                case 0x0003:
+                    tv_conn_info.setVisibility(View.VISIBLE);
+                    BluetoothDevice device = (BluetoothDevice) msg.obj;
+                    tv_conn_info.setText("设备" + device.getName() + "已经接入");
+                    Toast.makeText(MainActivity.this, "设备" + device.getName() + "已经接入", Toast.LENGTH_LONG).show();
+//                    Intent intent = new Intent(MainActivity.this, BltSocketAcivity.class);
+//                    startActivity(intent);
+                    break;
+                case 0x0004:
                     break;
             }
         }
@@ -73,10 +91,18 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         lv_already_conn = (ListView) findViewById(R.id.lv_already_conn);
         lv_could_conn = (ListView) findViewById(R.id.lv_could_conn);
         tv_local_info = (TextView) findViewById(R.id.tv_local_info);
+        tv_conn_info = (TextView) findViewById(R.id.tv_conn_info);
+        btn_open_server = (Button) findViewById(R.id.btn_open_server);
+        btn_open_server.setOnClickListener(this);
+
         mAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        btServer = BTServer.getInstance(mAdapter);
 
         deviceCouldConn = new ArrayList<>();
         deviceCouldConnTemp = new ArrayList<>();
+        bluetoothDevices = new ArrayList<>();
+
         arrayAdapterCouldConn = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, deviceCouldConn);
 
         lv_could_conn.setAdapter(arrayAdapterCouldConn);
@@ -265,36 +291,73 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 //获取蓝牙设备
                 BluetoothDevice scanDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 if (scanDevice == null || scanDevice.getName() == null) return;
-                deviceCouldConnTemp.add(scanDevice.getName() + "   " + scanDevice.getAddress());
-                Log.d(TAG, "name=" + scanDevice.getName() + "address=" + scanDevice.getAddress());
-                handler.sendEmptyMessage(0x0001);
+
+                //去重
+                boolean isContain = false;
+                for (int i = 0; i < bluetoothDevices.size(); i++) {
+                    if (bluetoothDevices.get(i).getAddress().equalsIgnoreCase(scanDevice.getAddress())) {
+                        isContain = true;
+                        break;
+                    }
+                }
+                if (!isContain) {
+                    bluetoothDevices.add(scanDevice);
+                    deviceCouldConnTemp.add(scanDevice.getName() + ";" + scanDevice.getAddress());
+                    Log.d(TAG, "name=" + scanDevice.getName() + "address=" + scanDevice.getAddress());
+                    handler.sendEmptyMessage(0x0001);
+                }
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
 
             } else if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-//                switch (device.getBondState()) {
-//                    case BluetoothDevice.BOND_BONDING://正在配对
-//                        Log.d("BlueToothTestActivity", "正在配对......");
+                switch (device.getBondState()) {
+                    case BluetoothDevice.BOND_BONDING://正在配对
+                        Log.d("BlueToothTestActivity", "正在配对......");
 //                        onRegisterBltReceiver.onBltIng(device);
-//                        break;
-//                    case BluetoothDevice.BOND_BONDED://配对结束
-//                        Log.d("BlueToothTestActivity", "完成配对");
+                        break;
+                    case BluetoothDevice.BOND_BONDED://配对结束
+                        Log.d("BlueToothTestActivity", "完成配对");
 //                        onRegisterBltReceiver.onBltEnd(device);
-//                        break;
-//                    case BluetoothDevice.BOND_NONE://取消配对/未配对
-//                        Log.d("BlueToothTestActivity", "取消配对");
+                        break;
+                    case BluetoothDevice.BOND_NONE://取消配对/未配对
+                        Log.d("BlueToothTestActivity", "取消配对");
 //                        onRegisterBltReceiver.onBltNone(device);
-//                    default:
-//                        break;
-//                }
+                    default:
+                        break;
+                }
             }
         }
 
     };
+    //endregion
+
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
+//        String item = arrayAdapterCouldConn.getItem(i);
+//        String[] split = item.split(";");
+        BluetoothDevice bluetoothDevice = bluetoothDevices.get(i);
+        Log.i(TAG, "deviceName:" + bluetoothDevice.getName());
+        BTClient.getInstance(mAdapter).connect(bluetoothDevice, handler);
+
     }
-    //endregion
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.btn_open_server:
+                tv_conn_info.setVisibility(View.VISIBLE);
+                tv_conn_info.setText("正在等待设备加入");
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        btServer.run(handler);
+                    }
+                }).start();
+
+
+                break;
+        }
+    }
 }

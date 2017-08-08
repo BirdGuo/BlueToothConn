@@ -1,5 +1,7 @@
 package com.gxw.bluetoothconn;
 
+import java.util.UUID;
+
 /**
  * Created by guoxw on 2017/8/7 0007.
  *
@@ -27,4 +29,9 @@ public class Constants {
     public static final int STATE_LISTEN = 1;     // now listening for incoming connections
     public static final int STATE_CONNECTING = 2; // now initiating an outgoing connection
     public static final int STATE_CONNECTED = 3;  // now connected to a remote device
+
+    /**
+     * 蓝牙UUID
+     */
+    public static UUID SPP_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 }
