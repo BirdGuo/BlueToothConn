@@ -106,13 +106,14 @@ public class DeviceDetailActivity extends AppCompatActivity implements View.OnCl
         switch (view.getId()) {
             case R.id.btn_detail_send_file:
 
-                SendMessageUtil.sendMessageByFile(Environment.getExternalStorageDirectory() + "/yundou.3gp", MyApplication.bluetoothSocket);
+                SendMessageUtil.sendMessageByFile(Environment.getExternalStorageDirectory() + "/loading.png", MyApplication.bluetoothSocket);
 
                 break;
             case R.id.btn_detail_send_text:
                 if (et_detail.getText().toString().trim().equalsIgnoreCase("")) return;
                 SendMessageUtil.sendMessage(et_detail.getText().toString().trim(), MyApplication.bluetoothSocket);
                 ll_content.addView(getRightTextView(et_detail.getText().toString().trim()));
+                et_detail.setText("");
                 break;
         }
     }
