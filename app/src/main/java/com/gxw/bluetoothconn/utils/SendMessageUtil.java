@@ -4,9 +4,12 @@ import android.bluetooth.BluetoothSocket;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.gxw.bluetoothconn.bean.MessageBean;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
 /**
@@ -30,9 +33,10 @@ public class SendMessageUtil {
     public static void sendMessage(String message, BluetoothSocket bluetoothSocket) {
         if (bluetoothSocket == null || TextUtils.isEmpty(message)) return;
         try {
-            message += "\n";
-            OutputStream outputStream = bluetoothSocket.getOutputStream();
-            outputStream.write(message.getBytes("utf-8"));
+            byte[] bytes = message.getBytes("utf-8");
+            MessageBean messageBean = new MessageBean(1, bytes);
+            ObjectOutputStream outputStream = (ObjectOutputStream) bluetoothSocket.getOutputStream();
+            outputStream.writeObject(message);
             outputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();

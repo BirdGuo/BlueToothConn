@@ -41,6 +41,7 @@ public class ReceiveMessageUtil {
 //            while (true) {
             while ((json = bff.readLine()) != null) {
                 Log.i(TAG, "json" + json);
+
                 Message message = new Message();
                 if (json.startsWith("file")) {
                     Log.i(TAG, "This is file");
