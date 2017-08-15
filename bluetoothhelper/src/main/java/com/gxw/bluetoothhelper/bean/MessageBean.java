@@ -1,4 +1,4 @@
-package com.gxw.bluetoothconn.bean;
+package com.gxw.bluetoothhelper.bean;
 
 import android.os.Parcel;
 import android.os.Parcelable;

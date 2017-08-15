@@ -2,40 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.gxw.bluetoothconn">
 
-    <!-- 申请蓝牙操作权限 -->
-    <uses-permission android:name="android.permission.BLUETOOTH"/>
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
-
-    <!-- 申请网络操作权限 -->
-    <!-- 允许应用程序改变网络状态 -->
-    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
-    <!-- 允许应用程序改变WIFI连接状态 -->
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
-    <!-- 允许应用程序访问有关的网络信息 -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <!-- 允许应用程序访问WIFI网卡的网络信息 -->
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <!-- 允许应用程序完全使用网络 -->
-    <uses-permission android:name="android.permission.INTERNET"/>
-
-    <!-- 读取手机状态权限 -->
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-
-    <!--读sdcard中数据的权限 -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <!--往sdcard中写入数据的权限 -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <!--在sdcard中创建/删除文件的权限 -->
-    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
-
-    <!-- 新版本蓝牙需要定位的权限 -->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-
-    <!-- 申请Bluetooth 具有BLE特性 -->
-    <uses-feature
-        android:name="android.hardware.bluetooth_le"
-        android:required="true"/>
 
     <application
         android:name=".MyApplication"

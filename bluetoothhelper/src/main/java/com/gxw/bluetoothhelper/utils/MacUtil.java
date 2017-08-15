@@ -1,4 +1,4 @@
-package com.gxw.bluetoothconn.utils;
+package com.gxw.bluetoothhelper.utils;
 
 import android.content.Context;
 

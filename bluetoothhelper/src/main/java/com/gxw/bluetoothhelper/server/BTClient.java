@@ -1,4 +1,4 @@
-package com.gxw.bluetoothconn.server;
+package com.gxw.bluetoothhelper.server;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;

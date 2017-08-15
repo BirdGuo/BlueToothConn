@@ -1,11 +1,12 @@
-package com.gxw.bluetoothconn.utils;
+package com.gxw.bluetoothhelper.utils;
 
 import android.bluetooth.BluetoothSocket;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import com.gxw.bluetoothconn.bean.MessageBean;
+
+import com.gxw.bluetoothhelper.bean.MessageBean;
 
 import java.io.File;
 import java.io.IOException;

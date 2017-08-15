@@ -13,5 +13,5 @@ import android.bluetooth.BluetoothSocket;
 
 public class MyApplication extends Application {
     //不管是蓝牙连接方还是服务器方，得到socket对象后都传入
-    public static BluetoothSocket bluetoothSocket;
+//    public static BluetoothSocket bluetoothSocket;
 }

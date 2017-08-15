@@ -23,9 +23,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.gxw.bluetoothconn.server.BTClient;
-import com.gxw.bluetoothconn.server.BTServer;
-import com.gxw.bluetoothconn.utils.MacUtil;
+
+import com.gxw.bluetoothhelper.Constants;
+import com.gxw.bluetoothhelper.server.BTClient;
+import com.gxw.bluetoothhelper.server.BTServer;
+import com.gxw.bluetoothhelper.utils.MacUtil;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -202,6 +204,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         mAdapter.cancelDiscovery();
 
         unregisterReceiver(mBluetoothReceiver);
+
+        Constants.bluetoothSocket = null;
     }
 
     /**
@@ -362,8 +366,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                         btServer.run(handler);
                     }
                 }).start();
-
-
                 break;
         }
     }

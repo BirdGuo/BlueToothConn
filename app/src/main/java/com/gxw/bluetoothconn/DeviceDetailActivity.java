@@ -16,8 +16,9 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.gxw.bluetoothconn.utils.ReceiveMessageUtil;
-import com.gxw.bluetoothconn.utils.SendMessageUtil;
+import com.gxw.bluetoothhelper.Constants;
+import com.gxw.bluetoothhelper.utils.ReceiveMessageUtil;
+import com.gxw.bluetoothhelper.utils.SendMessageUtil;
 
 import java.io.IOException;
 
@@ -38,12 +39,12 @@ public class DeviceDetailActivity extends AppCompatActivity implements View.OnCl
                     Log.i(TAG,"---------------文本消息--------");
                     if (TextUtils.isEmpty(msg.obj.toString())) return;
                     ll_content.addView(getLeftTextView(msg.obj.toString()));
-                    try {
-                        MyApplication.bluetoothSocket.close();
-                        MyApplication.bluetoothSocket.connect();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+//                    try {
+//                        Constants.bluetoothSocket.close();
+//                        Constants.bluetoothSocket.connect();
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
                     break;
                 case 2://文件消息
                     Log.i(TAG,"---------------文件消息--------");
@@ -78,7 +79,7 @@ public class DeviceDetailActivity extends AppCompatActivity implements View.OnCl
         new Thread(new Runnable() {
             @Override
             public void run() {
-                ReceiveMessageUtil.receiveMessage(mHandler, MyApplication.bluetoothSocket);
+                ReceiveMessageUtil.receiveMessage(mHandler, Constants.bluetoothSocket);
             }
         }).start();
     }
@@ -114,15 +115,27 @@ public class DeviceDetailActivity extends AppCompatActivity implements View.OnCl
         switch (view.getId()) {
             case R.id.btn_detail_send_file:
 
-                SendMessageUtil.sendMessageByFile(Environment.getExternalStorageDirectory() + "/3.png", MyApplication.bluetoothSocket);
+                SendMessageUtil.sendMessageByFile(Environment.getExternalStorageDirectory() + "/3.png", Constants.bluetoothSocket);
 
                 break;
             case R.id.btn_detail_send_text:
                 if (et_detail.getText().toString().trim().equalsIgnoreCase("")) return;
-                SendMessageUtil.sendMessage(et_detail.getText().toString().trim(), MyApplication.bluetoothSocket);
+                SendMessageUtil.sendMessage(et_detail.getText().toString().trim(), Constants.bluetoothSocket);
                 ll_content.addView(getRightTextView(et_detail.getText().toString().trim()));
                 et_detail.setText("");
                 break;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        try {
+            Constants.bluetoothSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }
