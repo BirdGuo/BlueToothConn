@@ -19,6 +19,8 @@ import android.widget.TextView;
 import com.gxw.bluetoothconn.utils.ReceiveMessageUtil;
 import com.gxw.bluetoothconn.utils.SendMessageUtil;
 
+import java.io.IOException;
+
 public class DeviceDetailActivity extends AppCompatActivity implements View.OnClickListener {
 
     private String TAG = DeviceDetailActivity.class.getName().toString();
@@ -36,6 +38,12 @@ public class DeviceDetailActivity extends AppCompatActivity implements View.OnCl
                     Log.i(TAG,"---------------文本消息--------");
                     if (TextUtils.isEmpty(msg.obj.toString())) return;
                     ll_content.addView(getLeftTextView(msg.obj.toString()));
+                    try {
+                        MyApplication.bluetoothSocket.close();
+                        MyApplication.bluetoothSocket.connect();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 case 2://文件消息
                     Log.i(TAG,"---------------文件消息--------");
@@ -106,7 +114,7 @@ public class DeviceDetailActivity extends AppCompatActivity implements View.OnCl
         switch (view.getId()) {
             case R.id.btn_detail_send_file:
 
-                SendMessageUtil.sendMessageByFile(Environment.getExternalStorageDirectory() + "/loading.png", MyApplication.bluetoothSocket);
+                SendMessageUtil.sendMessageByFile(Environment.getExternalStorageDirectory() + "/3.png", MyApplication.bluetoothSocket);
 
                 break;
             case R.id.btn_detail_send_text:

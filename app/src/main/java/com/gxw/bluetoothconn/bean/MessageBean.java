@@ -19,9 +19,17 @@ public class MessageBean implements Serializable {
     private int type;
     private byte[] myMessage;
 
-    public MessageBean(int type, byte[] myMessage) {
+    private String fileName;
+    private String filePath;
+
+    public MessageBean() {
+    }
+
+    public MessageBean(int type, byte[] myMessage, String fileName, String filePath) {
         this.type = type;
         this.myMessage = myMessage;
+        this.fileName = fileName;
+        this.filePath = filePath;
     }
 
     public int getType() {
@@ -40,5 +48,29 @@ public class MessageBean implements Serializable {
         this.myMessage = myMessage;
     }
 
+    public String getFileName() {
+        return fileName;
+    }
 
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
+    @Override
+    public String toString() {
+        return "MessageBean{" +
+                "type=" + type +
+                ", myMessage=" + Arrays.toString(myMessage) +
+                ", fileName='" + fileName + '\'' +
+                ", filePath='" + filePath + '\'' +
+                '}';
+    }
 }
