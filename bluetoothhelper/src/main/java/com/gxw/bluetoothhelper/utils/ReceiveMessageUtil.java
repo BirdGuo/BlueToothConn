@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-
 import com.gxw.bluetoothhelper.bean.MessageBean;
 
 import java.io.File;
@@ -38,8 +37,8 @@ public class ReceiveMessageUtil {
             InputStream inputStream1 = bluetoothSocket.getInputStream();
 
             while (true) {
-                ObjectInputStream objectInputStream = new ObjectInputStream(inputStream1);
 
+                ObjectInputStream objectInputStream = new ObjectInputStream(inputStream1);
                 MessageBean messageBean = (MessageBean) objectInputStream.readObject();
                 byte[] myMessage = messageBean.getMyMessage();
                 if (messageBean.getType() == 1) {//文本消息

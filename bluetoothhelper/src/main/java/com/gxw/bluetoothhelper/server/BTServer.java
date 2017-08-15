@@ -6,7 +6,6 @@ import android.bluetooth.BluetoothSocket;
 import android.os.Handler;
 import android.os.Message;
 
-
 import com.gxw.bluetoothhelper.Constants;
 
 import java.io.IOException;
