@@ -7,7 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import com.gxw.bluetoothhelper.Constants;
+import com.gxw.bluetoothhelper.constant.Constants;
 
 import java.io.IOException;
 

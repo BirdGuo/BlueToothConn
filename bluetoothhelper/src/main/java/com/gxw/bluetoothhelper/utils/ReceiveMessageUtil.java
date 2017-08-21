@@ -52,7 +52,7 @@ public class ReceiveMessageUtil {
                     Message message = new Message();
 
                     File file = new File(messageBean.getFilePath());
-                    FileUtils.bytesToFile(file, messageBean.getMyMessage());
+                    FileUtil.bytesToFile(file, messageBean.getMyMessage());
 
                     message.obj = "文件:保存成功";
                     message.what = 2;

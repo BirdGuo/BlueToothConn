@@ -22,7 +22,7 @@ import java.util.Locale;
 /**
  * Created by GXW on 2016/2/10 0010.
  */
-public class FileUtils {
+public class FileUtil {
 
     static final String LOG_TAG = "FileUtils";
 
@@ -80,7 +80,7 @@ public class FileUtils {
         }
     }
 
-    private FileUtils() {
+    private FileUtil() {
     }
 
     /**

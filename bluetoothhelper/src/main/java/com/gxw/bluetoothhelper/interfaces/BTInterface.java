@@ -1,21 +1,42 @@
 package com.gxw.bluetoothhelper.interfaces;
 
+import com.gxw.bluetoothhelper.bean.BlueToothBean;
+
+import java.util.ArrayList;
+
 /**
  * Created by guoxw on 2017/8/15 0015.
  *
  * @auther guoxw
- * @createTime 2017/8/15 0015 17:29
+ * @createTime 2017 /8/15 0015 17:29
  * @packageName com.gxw.bluetoothhelper.interfaces
  */
-
 public interface BTInterface {
 
-    void startConnect();
+    /**
+     * Scan device start.
+     */
+    void scanDeviceStart();
 
-    void connectSuccess();
+    /**
+     * Has new devices all.
+     *
+     * @param blueToothBeen
+     *         the blue tooth been
+     */
+    void hasNewDevicesAll(ArrayList<BlueToothBean> blueToothBeen);
 
-    void connectFail();
+    /**
+     * Has new device.
+     *
+     * @param blueToothBean
+     *         the blue tooth bean
+     */
+    void hasNewDevice(BlueToothBean blueToothBean);
 
-    void disConnect();
+    /**
+     * Scan device end.
+     */
+    void scanDeviceEnd();
 
 }

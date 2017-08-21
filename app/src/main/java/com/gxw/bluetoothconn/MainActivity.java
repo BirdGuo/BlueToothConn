@@ -8,7 +8,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,8 +22,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
-import com.gxw.bluetoothhelper.Constants;
+import com.gxw.bluetoothhelper.BlueToothFactory.BTHelperFactory;
+import com.gxw.bluetoothhelper.constant.Constants;
+import com.gxw.bluetoothhelper.managers.BTHelperManager;
 import com.gxw.bluetoothhelper.server.BTClient;
 import com.gxw.bluetoothhelper.server.BTServer;
 import com.gxw.bluetoothhelper.utils.MacUtil;
@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     // Intent request codes
     private static final int REQUEST_ENABLE_BT = 3;
 
-    private BluetoothAdapter mAdapter;
+    //    private BluetoothAdapter mAdapter;
     private BluetoothManager bluetoothManager;
     private BTServer btServer;
 
@@ -54,6 +54,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     private ArrayList<String> deviceCouldConn, deviceCouldConnTemp;
     private ArrayList<BluetoothDevice> bluetoothDevices;
+
+    private BTHelperManager btHelperManager;
 
     //region handler
     private Handler handler = new Handler() {
@@ -103,9 +105,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         btn_open_server = (Button) findViewById(R.id.btn_open_server);
         btn_open_server.setOnClickListener(this);
 
-        mAdapter = BluetoothAdapter.getDefaultAdapter();
+//        mAdapter = BluetoothAdapter.getDefaultAdapter();
+//        btServer = BTServer.getInstance(mAdapter);
 
-        btServer = BTServer.getInstance(mAdapter);
+        BTHelperFactory btHelperFactory = new BTHelperFactory();
+        btHelperManager = btHelperFactory.createBTManager(this);
 
         deviceCouldConn = new ArrayList<>();
         deviceCouldConnTemp = new ArrayList<>();
@@ -119,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         /**
          * 判断是否支持蓝牙设备
          */
-        if (mAdapter == null) {
+        if (!btHelperManager.checkIsSupportBlueTooth()) {
             Toast.makeText(this, "不支持蓝牙设备", Toast.LENGTH_SHORT).show();
             finish();
             return;
@@ -128,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         /**
          * 判断手机是否支持BLE
          */
-        if (!MainActivity.this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+        if (!btHelperManager.checkIsSupportBLE()) {
             Toast.makeText(MainActivity.this, "不支持ble", Toast.LENGTH_SHORT).show();
             finish();
         }
@@ -148,12 +152,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         System.loadLibrary("native-lib");
     }
 
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "onActivityResult " + resultCode);
         switch (requestCode) {
             case REQUEST_ENABLE_BT:
                 if (resultCode == Activity.RESULT_OK) {//蓝牙已打开
-                    localBlueToothInfo(mAdapter);
+//                    localBlueToothInfo(mAdapter);
+
                 } else {//蓝牙未打开
                     // User did not enable Bluetooth or an error occurred
                     Log.d(TAG, "蓝牙未打开");
@@ -169,12 +175,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         super.onStart();
         Log.i(TAG, "--------------onStart------------");
 
-        if (mAdapter.isEnabled()) {//蓝牙未打开
+        if (!btHelperManager.checkBlueToothIsOpen()) {//蓝牙未打开
             //提示用户打开；
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
         } else {//已打开
-            localBlueToothInfo(mAdapter);
+//            localBlueToothInfo(mAdapter);
         }
 
     }
@@ -201,8 +207,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     protected void onDestroy() {
         super.onDestroy();
         Log.i(TAG, "--------------onDestroy------------");
-        mAdapter.cancelDiscovery();
-
+        btHelperManager.cancelDiscover();
         unregisterReceiver(mBluetoothReceiver);
 
         Constants.bluetoothSocket = null;
@@ -216,15 +221,19 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private void localBlueToothInfo(BluetoothAdapter mBluetoothAdapter) {
 
         //开启可见性
-        initBlueToothCouldBeSee();
+//        initBlueToothCouldBeSee();
+        btHelperManager.initBlueToothCouldBeSee(300);
         //获取蓝牙操作类
-        initBlueToothManager();
+//        initBlueToothManager();
         //注册广播监听器
-        initBroadCast();
+//        initBroadCast();
+        btHelperManager.getBlueToothBroad().regBTBroad();
         //开启扫描 6.0以上必须加入定位权限，不然扫描不到设备
-        mAdapter.startDiscovery();
+//        mAdapter.startDiscovery();
+        btHelperManager.startDiscovery();
         //获取本机蓝牙名称
-        String name = mBluetoothAdapter.getName();
+//        String name = mBluetoothAdapter.getName();
+        String name = bluetoothManager.getBlutToothDeviceName();
         //获取本机蓝牙地址
 //        String address = mBluetoothAdapter.getAddress();//直接获取在6.0以上是02:00:00:00:00:00
         //在6.0版本以后，获取硬件ID变得更加严格，所以通过设备的地址映射得到mac地址
@@ -258,18 +267,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         lv_already_conn.setAdapter(arrayAdapter);
     }
 
-    /**
-     * 开启蓝牙可见性
-     */
-    private void initBlueToothCouldBeSee() {
-        if (mAdapter.getScanMode() != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
-            Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-            //有时候扫描不到某设备，这是因为该设备对外不可见或者距离远，需要设备该蓝牙可见，这样该才能被搜索到。可见时间默认值为120s，最多可设置300。
-            discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-            startActivity(discoverableIntent);
-        }
-
-    }
 
     /**
      * 注册广播

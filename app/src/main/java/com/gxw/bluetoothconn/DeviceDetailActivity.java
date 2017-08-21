@@ -16,7 +16,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.gxw.bluetoothhelper.Constants;
+import com.gxw.bluetoothhelper.constant.Constants;
 import com.gxw.bluetoothhelper.utils.ReceiveMessageUtil;
 import com.gxw.bluetoothhelper.utils.SendMessageUtil;
 
