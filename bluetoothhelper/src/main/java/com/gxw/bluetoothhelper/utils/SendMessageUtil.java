@@ -4,7 +4,6 @@ import android.bluetooth.BluetoothSocket;
 import android.text.TextUtils;
 import android.util.Log;
 
-
 import com.gxw.bluetoothhelper.bean.MessageBean;
 
 import java.io.ByteArrayOutputStream;
@@ -33,7 +32,8 @@ public class SendMessageUtil {
      * @param bluetoothSocket
      */
     public static void sendMessage(String message, BluetoothSocket bluetoothSocket) {
-        if (bluetoothSocket == null || TextUtils.isEmpty(message)) return;
+        if (bluetoothSocket == null || TextUtils.isEmpty(message) || !bluetoothSocket.isConnected())
+            return;
         try {
             byte[] bytes = message.getBytes("utf-8");
             MessageBean messageBean = new MessageBean(1, bytes, "", "");
@@ -55,7 +55,8 @@ public class SendMessageUtil {
      * @param bluetoothSocket
      */
     public static void sendMessageByFile(String filePath, BluetoothSocket bluetoothSocket) {
-        if (bluetoothSocket == null || TextUtils.isEmpty(filePath)) return;
+        if (bluetoothSocket == null || TextUtils.isEmpty(filePath) || !bluetoothSocket.isConnected())
+            return;
         try {
             OutputStream outputStream = bluetoothSocket.getOutputStream();
 

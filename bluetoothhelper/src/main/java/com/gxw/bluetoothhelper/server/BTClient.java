@@ -8,6 +8,7 @@ import android.os.Message;
 import android.util.Log;
 
 import com.gxw.bluetoothhelper.constant.Constants;
+import com.gxw.bluetoothhelper.constant.HandlerCode;
 
 import java.io.IOException;
 
@@ -49,6 +50,9 @@ public class BTClient {
     public void connect(BluetoothDevice btDev, Handler handler) {
         BluetoothSocket mBluetoothSocket = null;
         try {
+
+            Log.d("blueTooth", btDev.getName() + "   " + btDev.getAddress());
+
             //通过和服务器协商的uuid来进行连接
             mBluetoothSocket = btDev.createRfcommSocketToServiceRecord(Constants.SPP_UUID);
             if (mBluetoothSocket != null)
@@ -60,6 +64,7 @@ public class BTClient {
             //在建立之前调用
             if (bluetoothAdapter.isDiscovering()) {
                 //停止搜索
+                Log.i("blueTooth", "-----------停止搜索---------");
                 bluetoothAdapter.cancelDiscovery();
             }
             //如果当前socket处于非连接状态则调用连接
@@ -72,19 +77,36 @@ public class BTClient {
             if (handler == null) return;
             //结果回调
             Message message = new Message();
-            message.what = 0x0004;
+            message.what = HandlerCode.BTCLIENT_HAS_MESSAGE;
             message.obj = btDev;
             handler.sendMessage(message);
         } catch (Exception e) {
             Log.e("blueTooth", "...链接失败");
             try {
 //                getmBluetoothSocket().close();
-                if (mBluetoothSocket != null)
+                if (mBluetoothSocket != null){
                     mBluetoothSocket.close();
+                    Constants.bluetoothSocket = null;
+                    handler.sendEmptyMessage(HandlerCode.SOCKET_CLOSE);
+                }
+
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * 关闭连接
+     */
+    public void disConnect() {
+        if (Constants.bluetoothSocket != null && Constants.bluetoothSocket.isConnected()) {
+            try {
+                Constants.bluetoothSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

@@ -21,10 +21,10 @@ public interface BTInterface {
     /**
      * Has new devices all.
      *
-     * @param blueToothBeen
-     *         the blue tooth been
+     * @param blueToothBeens
+     *         the blue tooth beens
      */
-    void hasNewDevicesAll(ArrayList<BlueToothBean> blueToothBeen);
+    void hasNewDevicesAll(ArrayList<BlueToothBean> blueToothBeens);
 
     /**
      * Has new device.

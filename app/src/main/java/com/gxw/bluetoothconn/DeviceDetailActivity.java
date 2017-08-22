@@ -17,10 +17,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.gxw.bluetoothhelper.constant.Constants;
+import com.gxw.bluetoothhelper.constant.HandlerCode;
 import com.gxw.bluetoothhelper.utils.ReceiveMessageUtil;
 import com.gxw.bluetoothhelper.utils.SendMessageUtil;
 
 import java.io.IOException;
+
 
 public class DeviceDetailActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -35,22 +37,21 @@ public class DeviceDetailActivity extends AppCompatActivity implements View.OnCl
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
-                case 1://文本消息
-                    Log.i(TAG,"---------------文本消息--------");
-                    if (TextUtils.isEmpty(msg.obj.toString())) return;
-                    ll_content.addView(getLeftTextView(msg.obj.toString()));
-//                    try {
-//                        Constants.bluetoothSocket.close();
-//                        Constants.bluetoothSocket.connect();
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-                    break;
-                case 2://文件消息
-                    Log.i(TAG,"---------------文件消息--------");
+                case HandlerCode.MESSAGE_TEXT://文本消息
+                    Log.i(TAG, "---------------文本消息--------");
                     if (TextUtils.isEmpty(msg.obj.toString())) return;
                     ll_content.addView(getLeftTextView(msg.obj.toString()));
                     break;
+                case HandlerCode.MESSAGE_FILE://文件消息
+                    Log.i(TAG, "---------------文件消息--------");
+                    if (TextUtils.isEmpty(msg.obj.toString())) return;
+                    ll_content.addView(getLeftTextView(msg.obj.toString()));
+                    break;
+
+                case HandlerCode.SOCKET_CLOSE:
+                    DeviceDetailActivity.this.finish();
+                    break;
+
             }
         }
     };
@@ -129,13 +130,23 @@ public class DeviceDetailActivity extends AppCompatActivity implements View.OnCl
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
+        Log.i(TAG, "-------------onDestroy--------------");
 
+
+        super.onDestroy();
+    }
+
+    @Override
+    public void finish() {
+        Log.i(TAG, "-------------finish--------------");
         try {
-            Constants.bluetoothSocket.close();
+            if (Constants.bluetoothSocket != null) {
+                Constants.bluetoothSocket.close();
+                Constants.bluetoothSocket = null;
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        super.finish();
     }
 }

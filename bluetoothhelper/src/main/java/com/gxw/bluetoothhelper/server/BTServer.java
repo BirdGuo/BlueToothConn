@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 
 import com.gxw.bluetoothhelper.constant.Constants;
+import com.gxw.bluetoothhelper.constant.HandlerCode;
 
 import java.io.IOException;
 
@@ -51,7 +52,7 @@ public class BTServer {
                     Constants.bluetoothSocket = socket;
                     //回调结果通知
                     Message message = new Message();
-                    message.what = 0x0003;
+                    message.what = HandlerCode.BTSERVER_CONNECTED;
                     message.obj = socket.getRemoteDevice();
                     handler.sendMessage(message);
                     //如果你的蓝牙设备只是一对一的连接，则执行以下代码

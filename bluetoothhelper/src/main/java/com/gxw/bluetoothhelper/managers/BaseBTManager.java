@@ -5,9 +5,11 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 
 import com.gxw.bluetoothhelper.bean.BlueToothBean;
 import com.gxw.bluetoothhelper.constant.Constants;
+import com.gxw.bluetoothhelper.utils.MacUtil;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -47,11 +49,51 @@ public abstract class BaseBTManager {
         return deviceHasConnected;
     }
 
+    /**
+     * 检查蓝牙是否已打开
+     *
+     * @return true 已打开;false 未打开
+     */
     public boolean checkBlueToothIsOpen() {
         if (mAdapter != null) {
             return mAdapter.isEnabled();
         }
         return false;
+    }
+
+    /**
+     * 打开蓝牙
+     */
+    public void openBlueTooth() {
+        // 若蓝牙没打开
+        if (mAdapter != null && !mAdapter.isEnabled()) {
+            mAdapter.enable();  //打开蓝牙，需要BLUETOOTH_ADMIN权限
+        }
+    }
+
+    /**
+     * 关闭蓝牙
+     * <p>
+     *
+     * @return
+     */
+    public void closeBlueTooth() {
+        //若已打开
+        if (mAdapter != null && mAdapter.isEnabled()) {
+            mAdapter.disable();
+        }
+    }
+
+    /**
+     * 是否已连接
+     */
+    public boolean checkIsConnect() {
+
+        if (Constants.bluetoothSocket != null && Constants.bluetoothSocket.isConnected()) {
+            return true;
+        }
+        return false;
+
     }
 
     /**
@@ -108,8 +150,29 @@ public abstract class BaseBTManager {
      * 停止扫描
      */
     public void cancelDiscover() {
-        if (mAdapter != null)
+        if (mAdapter != null && mAdapter.isDiscovering())
             mAdapter.cancelDiscovery();
+    }
+
+    /**
+     * 获取蓝牙Mac地址
+     * <p>
+     * 发现 安卓6.0系统用户返回的Mac地址都是 02:00:00:00:00:00，被误判为作弊用户，实际上是谷歌在6.0及以后版本对获取wifi及蓝牙MacAddress 做的改动。
+     * Most notably, Local WiFi and Bluetooth MAC addresses are no longer available.
+     * The getMacAddress() method of a WifiInfo object and the BluetoothAdapter.getDefaultAdapter().getAddress()
+     * method will both return 02:00:00:00:00:00 from now on.
+     *
+     * @return
+     */
+    public String getBluetoothMac() {
+        String btMac = "";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            //在6.0版本以后，获取硬件ID变得更加严格，所以通过设备的地址映射得到mac地址 但是这个地址同样不对
+            btMac = MacUtil.getBTMac(mContext);
+        } else {
+            btMac = mAdapter.getAddress();
+        }
+        return btMac;
     }
 
     /**
@@ -118,6 +181,24 @@ public abstract class BaseBTManager {
      */
     public abstract void startDiscovery();
 
+    /**
+     * 注册广播
+     */
+    public abstract void regBoradCastReceiver();
 
+    /**
+     * 取消注册
+     */
+    public abstract void unregBroadCastReceiver();
+
+    /**
+     * 开启服务端
+     */
+    public abstract void openBTServer();
+
+    /**
+     * 开启客户端
+     */
+    public abstract void clientConnectToServer();
 
 }
