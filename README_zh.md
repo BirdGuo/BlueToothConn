@@ -1,26 +1,24 @@
 # BlueToothConn
 ============================================
-Android scan bluetooth devices and connection and communication
+蓝牙扫描连接通信
 
-[简体中文](https://github.com/BirdGuo/BlueToothConn/blob/master/README_zh.md)
-
-##Usage
-###Init Factory
+##使用
+###初始化工厂类
 ```
     BTHelperFactory btHelperFactory = new BTHelperFactory();
     btHelperManager = btHelperFactory.createBTManager(this);
     btHelperManager.setBtInterface(this);
 ```
 
-###Get bluetooth devices
-- get bluetooth devices already bonded
+###获取蓝牙设备列表
+- 获取已配对过得设备列表
 ```
     ArrayList<BlueToothBean> deviceBondeds = btHelperManager.getDeviceBonded();
 ```
 
-- get bluetooth devices be scanned
+- 获取扫描到的设备列表
 
-    Through the interface callback way to obtain. Note System version greater than 6.0 requires location access to targeting
+    通过接口回调方式获取。注意系统版本大于6.0需要获取定位权限
 ```
     /**
      * Has new devices all.
@@ -39,50 +37,47 @@ Android scan bluetooth devices and connection and communication
     void hasNewDevice(BlueToothBean blueToothBean);
 ```
 
-###Connect device
-1.  start server(server should be started before client)
+###连接设备
+1.  启动服务端(在客户端前先启动)
 ```
     btHelperManager.setmHandler(handler);
     btHelperManager.openBTServer();
 ```
-2.  client starts to connect server
+2.  客户端启动连接
 ```
-    //add device to be connected
+    //传入需要连接的设备
     btHelperManager.setBluetoothDeviceToConn(bluetoothDevice);
-    //add handler
+    //设置handler回调
     btHelperManager.setmHandler(handler);
-    //stop scanning
+    //停止扫描
     btHelperManager.cancelDiscover();
-    //start connecting
+    //开始连接
     btHelperManager.clientConnectToServer();
 ```
 
-###Send Message
-- send text message
+###发送消息
+- 发送文字
 ```
     SendMessageUtil.sendMessage(et_detail.getText().toString().trim(), Constants.bluetoothSocket);
 ```
-- send file message
+- 发送文件
 ```
     SendMessageUtil.sendMessageByFile(Environment.getExternalStorageDirectory() + "/3.png", Constants.bluetoothSocket);
 ```
 
-##Issue
-- disconnect() function has some problems 
+##问题
+- 断开连接方法写的不是很好 
 
-  It will throw a socket closed exception when you want to disconnect,due to receiving message thread uses while(true) 
+  由于收消息的线程是个while(true),当一方断开连接时，会造成抛出socket closed异常。
   
-- bluetoothSocket is saved as static
+- 连接的Socket保存方式为static
 
-  It's easy to casue forgetting to set null and cause leakage 
+  将socket存为一个静态变量，但是容易忘记置空和引起泄露
   
-- Send message and receive message
+- 收发消息
 
-  They are static methods ,i want to merge them into bluetoothManager
+  这是单独写static的方法，想把它并入Manager中
   
-##Connect Me
+##联系我
   
-[Email](mailto:603004002@qq.com)
-
-
-
+[邮箱](mailto:603004002@qq.com)

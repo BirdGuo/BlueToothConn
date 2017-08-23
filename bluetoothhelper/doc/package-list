@@ -1,0 +1,8 @@
+com.gxw.bluetoothhelper.BlueToothFactory
+com.gxw.bluetoothhelper.bean
+com.gxw.bluetoothhelper.boradcasts
+com.gxw.bluetoothhelper.constant
+com.gxw.bluetoothhelper.interfaces
+com.gxw.bluetoothhelper.managers
+com.gxw.bluetoothhelper.server
+com.gxw.bluetoothhelper.utils
