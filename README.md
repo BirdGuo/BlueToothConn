@@ -4,15 +4,15 @@ Android scan bluetooth devices and connection and communication
 
 [简体中文](https://github.com/BirdGuo/BlueToothConn/blob/master/README_zh.md)
 
-##Usage
-###Init Factory
+## Usage
+### Init Factory
 ```
     BTHelperFactory btHelperFactory = new BTHelperFactory();
     btHelperManager = btHelperFactory.createBTManager(this);
     btHelperManager.setBtInterface(this);
 ```
 
-###Get bluetooth devices
+### Get bluetooth devices
 - get bluetooth devices already bonded
 ```
     ArrayList<BlueToothBean> deviceBondeds = btHelperManager.getDeviceBonded();
@@ -39,7 +39,7 @@ Android scan bluetooth devices and connection and communication
     void hasNewDevice(BlueToothBean blueToothBean);
 ```
 
-###Connect device
+### Connect device
 1.  start server(server should be started before client)
 ```
     btHelperManager.setmHandler(handler);
@@ -57,7 +57,7 @@ Android scan bluetooth devices and connection and communication
     btHelperManager.clientConnectToServer();
 ```
 
-###Send Message
+### Send Message
 - send text message
 ```
     SendMessageUtil.sendMessage(et_detail.getText().toString().trim(), Constants.bluetoothSocket);
@@ -67,7 +67,7 @@ Android scan bluetooth devices and connection and communication
     SendMessageUtil.sendMessageByFile(Environment.getExternalStorageDirectory() + "/3.png", Constants.bluetoothSocket);
 ```
 
-##Issue
+## Issue
 - disconnect() function has some problems 
 
   It will throw a socket closed exception when you want to disconnect,due to receiving message thread uses while(true) 
@@ -80,7 +80,7 @@ Android scan bluetooth devices and connection and communication
 
   They are static methods ,i want to merge them into bluetoothManager
   
-##Connect Me
+## Connect Me
   
 [Email](mailto:603004002@qq.com)
 

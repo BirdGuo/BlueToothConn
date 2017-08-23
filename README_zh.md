@@ -2,15 +2,15 @@
 ============================================
 蓝牙扫描连接通信
 
-##使用
-###初始化工厂类
+## 使用
+### 初始化工厂类
 ```
     BTHelperFactory btHelperFactory = new BTHelperFactory();
     btHelperManager = btHelperFactory.createBTManager(this);
     btHelperManager.setBtInterface(this);
 ```
 
-###获取蓝牙设备列表
+### 获取蓝牙设备列表
 - 获取已配对过得设备列表
 ```
     ArrayList<BlueToothBean> deviceBondeds = btHelperManager.getDeviceBonded();
@@ -37,7 +37,7 @@
     void hasNewDevice(BlueToothBean blueToothBean);
 ```
 
-###连接设备
+### 连接设备
 1.  启动服务端(在客户端前先启动)
 ```
     btHelperManager.setmHandler(handler);
@@ -55,7 +55,7 @@
     btHelperManager.clientConnectToServer();
 ```
 
-###发送消息
+### 发送消息
 - 发送文字
 ```
     SendMessageUtil.sendMessage(et_detail.getText().toString().trim(), Constants.bluetoothSocket);
@@ -65,7 +65,7 @@
     SendMessageUtil.sendMessageByFile(Environment.getExternalStorageDirectory() + "/3.png", Constants.bluetoothSocket);
 ```
 
-##问题
+## 问题
 - 断开连接方法写的不是很好 
 
   由于收消息的线程是个while(true),当一方断开连接时，会造成抛出socket closed异常。
@@ -78,6 +78,6 @@
 
   这是单独写static的方法，想把它并入Manager中
   
-##联系我
+## 联系我
   
 [邮箱](mailto:603004002@qq.com)
