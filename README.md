@@ -1,5 +1,4 @@
 # BlueToothConn
-============================================ 
 
 Android scan bluetooth devices and connection and communication
 
