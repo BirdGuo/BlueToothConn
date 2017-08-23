@@ -1,5 +1,6 @@
 # BlueToothConn
-============================================
+============================================ 
+
 Android scan bluetooth devices and connection and communication
 
 [简体中文](https://github.com/BirdGuo/BlueToothConn/blob/master/README_zh.md)
