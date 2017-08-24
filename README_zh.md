@@ -40,15 +40,12 @@
 ### 连接设备
 1.  启动服务端(在客户端前先启动)
 ```
-    btHelperManager.setmHandler(handler);
     btHelperManager.openBTServer();
 ```
 2.  客户端启动连接
 ```
     //传入需要连接的设备
     btHelperManager.setBluetoothDeviceToConn(bluetoothDevice);
-    //设置handler回调
-    btHelperManager.setmHandler(handler);
     //停止扫描
     btHelperManager.cancelDiscover();
     //开始连接
@@ -58,11 +55,11 @@
 ### 发送消息
 - 发送文字
 ```
-    SendMessageUtil.sendMessage(et_detail.getText().toString().trim(), Constants.bluetoothSocket);
+    btManager.sendTextMessage(et_detail.getText().toString().trim());
 ```
 - 发送文件
 ```
-    SendMessageUtil.sendMessageByFile(Environment.getExternalStorageDirectory() + "/3.png", Constants.bluetoothSocket);
+    btManager.sendFileMessage(Environment.getExternalStorageDirectory() + "/3.png");
 ```
 
 ## 问题
@@ -70,13 +67,8 @@
 
   由于收消息的线程是个while(true),当一方断开连接时，会造成抛出socket closed异常。
   
-- 连接的Socket保存方式为static
-
-  将socket存为一个静态变量，但是容易忘记置空和引起泄露
+- Server，client 和Manager耦合有点高
   
-- 收发消息
-
-  这是单独写static的方法，想把它并入Manager中
   
 ## 联系我
   

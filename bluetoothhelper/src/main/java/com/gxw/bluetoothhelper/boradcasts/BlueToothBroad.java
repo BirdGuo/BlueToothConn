@@ -17,11 +17,10 @@ import java.util.ArrayList;
 /**
  * Created by guoxw on 2017/8/21 0021.
  *
- * @auther guoxw
- * @createTime 2017/8/21 0021 15:13
+ * @author guoxw
+ * @createTime 2017 /8/21 0021 15:13
  * @packageName com.gxw.bluetoothhelper
  */
-
 public class BlueToothBroad extends BroadcastReceiver {
 
     private String TAG = BlueToothBroad.class.getName().toString();
@@ -31,11 +30,23 @@ public class BlueToothBroad extends BroadcastReceiver {
 
     private Context mContext;
 
+    /**
+     * 初始化构造器
+     *
+     * @param context
+     *         the context
+     */
     public BlueToothBroad(Context context) {
         this.blueToothBeens = new ArrayList<BlueToothBean>();
         this.mContext = context;
     }
 
+    /**
+     * 设置扫描接口回调
+     *
+     * @param btInterface
+     *         the bt interface
+     */
     public void setBtInterface(BTInterface btInterface) {
         this.btInterface = btInterface;
     }

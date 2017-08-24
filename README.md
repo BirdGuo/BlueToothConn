@@ -42,15 +42,12 @@ Android scan bluetooth devices and connection and communication
 ### Connect device
 1.  start server(server should be started before client)
 ```
-    btHelperManager.setmHandler(handler);
     btHelperManager.openBTServer();
 ```
 2.  client starts to connect server
 ```
     //add device to be connected
     btHelperManager.setBluetoothDeviceToConn(bluetoothDevice);
-    //add handler
-    btHelperManager.setmHandler(handler);
     //stop scanning
     btHelperManager.cancelDiscover();
     //start connecting
@@ -60,25 +57,19 @@ Android scan bluetooth devices and connection and communication
 ### Send Message
 - send text message
 ```
-    SendMessageUtil.sendMessage(et_detail.getText().toString().trim(), Constants.bluetoothSocket);
+    btManager.sendTextMessage(et_detail.getText().toString().trim());
 ```
 - send file message
 ```
-    SendMessageUtil.sendMessageByFile(Environment.getExternalStorageDirectory() + "/3.png", Constants.bluetoothSocket);
+    btManager.sendFileMessage(Environment.getExternalStorageDirectory() + "/3.png");
 ```
 
 ## Issue
 - disconnect() function has some problems 
 
   It will throw a socket closed exception when you want to disconnect,due to receiving message thread uses while(true) 
-  
-- bluetoothSocket is saved as static
 
-  It's easy to casue forgetting to set null and cause leakage 
-  
-- Send message and receive message
-
-  They are static methods ,i want to merge them into bluetoothManager
+- The coupling between Server ,client and manager is a bit high
   
 ## Connect Me
   

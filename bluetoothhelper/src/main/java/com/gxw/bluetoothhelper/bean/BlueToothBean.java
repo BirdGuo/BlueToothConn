@@ -5,53 +5,112 @@ import android.bluetooth.BluetoothDevice;
 /**
  * Created by guoxw on 2017/8/21 0021.
  *
- * @auther guoxw
- * @createTime 2017/8/21 0021 15:45
+ * @author guoxw
+ * @createTime 2017 /8/21 0021 15:45
  * @packageName com.gxw.bluetoothhelper.bean
  */
-
 public class BlueToothBean {
 
-    private BluetoothDevice bluetoothDevice;
     /**
-     * @see com.gxw.bluetoothhelper.constant.Constants
+     * 具体设备
+     */
+    private BluetoothDevice bluetoothDevice;
+
+    /**
+     * 连接状态
+     *
+     * @see com.gxw.bluetoothhelper.constant.Constants#STATE_NORMAL
+     * @see com.gxw.bluetoothhelper.constant.Constants#STATE_CONNECTED
+     * @see com.gxw.bluetoothhelper.constant.Constants#STATE_CONNECTFAIL
+     * @see com.gxw.bluetoothhelper.constant.Constants#STATE_CONNECTING
      */
     private int connectState;
 
+    /**
+     * 设备来源
+     *
+     * @see com.gxw.bluetoothhelper.constant.Constants#DEVICE_FROM_BONDED
+     * @see com.gxw.bluetoothhelper.constant.Constants#DEVICE_FROM_DISCOVER
+     */
+    private int from;
 
-    private int type;
-
+    /**
+     * 蓝牙设备构造器.
+     */
     public BlueToothBean() {
     }
 
-    public BlueToothBean(BluetoothDevice bluetoothDevice, int connectState, int type) {
+    /**
+     * 蓝牙设备构造器.
+     *
+     * @param bluetoothDevice
+     *         具体设备
+     * @param connectState
+     *         连接状态
+     * @param from
+     *         来源
+     */
+    public BlueToothBean(BluetoothDevice bluetoothDevice, int connectState, int from) {
         this.bluetoothDevice = bluetoothDevice;
         this.connectState = connectState;
-        this.type = type;
+        this.from = from;
     }
 
+    /**
+     * Gets bluetooth device.
+     *
+     * @return the bluetooth device
+     */
     public BluetoothDevice getBluetoothDevice() {
         return bluetoothDevice;
     }
 
+    /**
+     * Sets bluetooth device.
+     *
+     * @param bluetoothDevice
+     *         the bluetooth device
+     */
     public void setBluetoothDevice(BluetoothDevice bluetoothDevice) {
         this.bluetoothDevice = bluetoothDevice;
     }
 
+    /**
+     * Gets connect state.
+     *
+     * @return the connect state
+     */
     public int getConnectState() {
         return connectState;
     }
 
+    /**
+     * Sets connect state.
+     *
+     * @param connectState
+     *         the connect state
+     */
     public void setConnectState(int connectState) {
         this.connectState = connectState;
     }
 
-    public int getType() {
-        return type;
+    /**
+     * Gets from.
+     *
+     * @return the from
+     */
+    public int getFrom() {
+        return from;
     }
 
-    public void setType(int type) {
-        this.type = type;
+    /**
+     * Sets from.
+     *
+     * @param from
+     *         the from
+     */
+    public void setFrom(int from) {
+        this.from = from;
     }
 
     @Override

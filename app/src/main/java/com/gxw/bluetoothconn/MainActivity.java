@@ -18,8 +18,8 @@ import android.widget.Toast;
 
 import com.gxw.bluetoothhelper.BlueToothFactory.BTHelperFactory;
 import com.gxw.bluetoothhelper.bean.BlueToothBean;
-import com.gxw.bluetoothhelper.constant.Constants;
 import com.gxw.bluetoothhelper.interfaces.BTInterface;
+import com.gxw.bluetoothhelper.interfaces.IBTConnect;
 import com.gxw.bluetoothhelper.managers.BTHelperManager;
 import com.gxw.bluetoothhelper.server.BTServer;
 
@@ -28,7 +28,7 @@ import java.util.ArrayList;
 /**
  * The type Main activity.
  */
-public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, View.OnClickListener, BTInterface {
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, View.OnClickListener, BTInterface, IBTConnect {
 
     private String TAG = MainActivity.class.getName().toString();
 
@@ -75,14 +75,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     Intent intent = new Intent(MainActivity.this, DeviceDetailActivity.class);
                     startActivity(intent);
                     break;
-                case 0x0004:
-                    tv_conn_info.setVisibility(View.VISIBLE);
-                    BluetoothDevice device1 = (BluetoothDevice) msg.obj;
-                    tv_conn_info.setText("设备" + device1.getName() + "已经接入");
-                    Toast.makeText(MainActivity.this, "设备" + device1.getName() + "已经接入", Toast.LENGTH_LONG).show();
-                    Intent intent1 = new Intent(MainActivity.this, DeviceDetailActivity.class);
-                    startActivity(intent1);
-                    break;
             }
         }
     };
@@ -102,9 +94,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         btn_open_server = (Button) findViewById(R.id.btn_open_server);
         btn_open_server.setOnClickListener(this);
 
-        BTHelperFactory btHelperFactory = new BTHelperFactory();
+        BTHelperFactory btHelperFactory = BTHelperFactory.getInstance();
         btHelperManager = btHelperFactory.createBTManager(this);
         btHelperManager.setBtInterface(this);
+        btHelperManager.setIbtConnect(this);
 
         deviceCouldConns = new ArrayList<>();
         deviceCouldConnTemps = new ArrayList<>();
@@ -154,6 +147,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         super.onStart();
         Log.i(TAG, "--------------onStart------------");
         btHelperManager.openBlueTooth();
+
         localBlueToothInfo();
 //        if (!btHelperManager.checkBlueToothIsOpen()) {//蓝牙未打开
 //            //提示用户打开；
@@ -169,29 +163,34 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     protected void onResume() {
         super.onResume();
-        Log.i(TAG, "--------------onResume------------" + btHelperManager.checkIsConnect());
+
+        if (!btHelperManager.checkIsConnect()) {
+            tv_conn_info.setText("");
+            tv_conn_info.setVisibility(View.GONE);
+            btn_open_server.setClickable(true);
+        } else {
+            btn_open_server.setClickable(false);
+        }
+
 
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Log.i(TAG, "--------------onPause------------");
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.i(TAG, "--------------onStop------------");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.i(TAG, "--------------onDestroy------------");
+        btHelperManager.disConnectBlutTooth();
         btHelperManager.cancelDiscover();
         btHelperManager.unregBroadCastReceiver();
-        Constants.bluetoothSocket = null;
     }
 
     /**
@@ -228,13 +227,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-//        BTClient.getInstance().connect(bluetoothDevice, handler);
         BluetoothDevice bluetoothDevice = deviceCouldConnBeans.get(i).getBluetoothDevice();
 
         Log.i(TAG, bluetoothDevice.getName() + "   " + bluetoothDevice.getAddress());
 
         btHelperManager.setBluetoothDeviceToConn(bluetoothDevice);
-        btHelperManager.setmHandler(handler);
 
         btHelperManager.cancelDiscover();
 
@@ -248,15 +245,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             case R.id.btn_open_server:
                 tv_conn_info.setVisibility(View.VISIBLE);
                 tv_conn_info.setText("正在等待设备加入");
-
-                btHelperManager.setmHandler(handler);
                 btHelperManager.openBTServer();
-//                new Thread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        btServer.run(handler);
-//                    }
-//                }).start();
                 break;
         }
     }
@@ -289,5 +278,28 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     public void scanDeviceEnd() {
         Log.i(TAG, "----------scanDeviceEnd-------");
+    }
+
+    @Override
+    public void connectSuccess(BluetoothDevice bluetoothDevice) {
+        Message message = new Message();
+        message.obj = bluetoothDevice;
+        message.what = 0x0003;
+        handler.sendMessage(message);
+    }
+
+    @Override
+    public void connectClose() {
+
+    }
+
+    @Override
+    public void receiveTextMessage(String message) {
+
+    }
+
+    @Override
+    public void receiveFileMessage(String filePath) {
+
     }
 }

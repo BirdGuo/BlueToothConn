@@ -7,35 +7,34 @@ import java.util.ArrayList;
 /**
  * Created by guoxw on 2017/8/15 0015.
  *
- * @auther guoxw
+ * @author guoxw
  * @createTime 2017 /8/15 0015 17:29
  * @packageName com.gxw.bluetoothhelper.interfaces
  */
 public interface BTInterface {
 
     /**
-     * Scan device start.
+     * 开始扫描
      */
     void scanDeviceStart();
 
     /**
-     * Has new devices all.
+     * 返回所有扫描到的设备
      *
      * @param blueToothBeens
-     *         the blue tooth beens
+     *         所有设备
      */
     void hasNewDevicesAll(ArrayList<BlueToothBean> blueToothBeens);
 
     /**
-     * Has new device.
+     * 返回最新扫描到的设备
      *
      * @param blueToothBean
-     *         the blue tooth bean
      */
     void hasNewDevice(BlueToothBean blueToothBean);
 
     /**
-     * Scan device end.
+     * 扫描结束
      */
     void scanDeviceEnd();
 

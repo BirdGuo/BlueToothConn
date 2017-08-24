@@ -3,29 +3,36 @@ package com.gxw.bluetoothhelper.server;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 
 import com.gxw.bluetoothhelper.constant.Constants;
-import com.gxw.bluetoothhelper.constant.HandlerCode;
-
-import java.io.IOException;
+import com.gxw.bluetoothhelper.interfaces.IBTConnect;
+import com.gxw.bluetoothhelper.managers.BaseBTManager;
 
 /**
  * Created by guoxw on 2017/8/8 0008.
  *
- * @auther guoxw
- * @createTime 2017/8/8 0008 09:53
+ * @author guoxw
+ * @createTime 2017 /8/8 0008 09:53
  * @packageName com.gxw.bluetoothconn.server
  */
-
 public class BTClient {
 
     private BluetoothAdapter bluetoothAdapter;
 
+    private BaseBTManager baseBTManager;
+    private IBTConnect ibtConnect;
+
     private static BTClient btClient = null;
 
+    /**
+     * 单例获取客户端
+     *
+     * @param bluetoothAdapter
+     *         蓝牙适配器
+     *
+     * @return BTClient
+     */
     public static BTClient getInstance(BluetoothAdapter bluetoothAdapter) {
         if (btClient == null) {
             btClient = new BTClient(bluetoothAdapter);
@@ -33,8 +40,34 @@ public class BTClient {
         return btClient;
     }
 
+    /**
+     * 构造器
+     *
+     * @param bluetoothAdapter
+     *         the bluetooth adapter
+     */
     public BTClient(BluetoothAdapter bluetoothAdapter) {
         this.bluetoothAdapter = bluetoothAdapter;
+    }
+
+    /**
+     * Sets base bt manager.
+     *
+     * @param baseBTManager
+     *         the base bt manager
+     */
+    public void setBaseBTManager(BaseBTManager baseBTManager) {
+        this.baseBTManager = baseBTManager;
+    }
+
+    /**
+     * Sets ibt connect.
+     *
+     * @param ibtConnect
+     *         the ibt connect
+     */
+    public void setIbtConnect(IBTConnect ibtConnect) {
+        this.ibtConnect = ibtConnect;
     }
 
     /**
@@ -42,12 +75,10 @@ public class BTClient {
      *
      * @param btDev
      *         蓝牙设备对象
-     * @param handler
-     *         结果回调事件
      *
      * @return
      */
-    public void connect(BluetoothDevice btDev, Handler handler) {
+    public void connect(BluetoothDevice btDev) {
         BluetoothSocket mBluetoothSocket = null;
         try {
 
@@ -55,9 +86,9 @@ public class BTClient {
 
             //通过和服务器协商的uuid来进行连接
             mBluetoothSocket = btDev.createRfcommSocketToServiceRecord(Constants.SPP_UUID);
-            if (mBluetoothSocket != null)
-                //全局只有一个bluetooth，所以我们可以将这个socket对象保存在appliaction中
-                Constants.bluetoothSocket = mBluetoothSocket;
+            if (mBluetoothSocket != null) {
+                baseBTManager.setBluetoothSocket(mBluetoothSocket);
+            }
             //通过反射得到bltSocket对象，与uuid进行连接得到的结果一样，但这里不提倡用反射的方法
             //mBluetoothSocket = (BluetoothSocket) btDev.getClass().getMethod("createRfcommSocket", new Class[]{int.class}).invoke(btDev, 1);
             Log.d("blueTooth", "开始连接...");
@@ -74,40 +105,14 @@ public class BTClient {
                 mBluetoothSocket.connect();
             }
             Log.d("blueTooth", "已经链接");
-            if (handler == null) return;
-            //结果回调
-            Message message = new Message();
-            message.what = HandlerCode.BTCLIENT_HAS_MESSAGE;
-            message.obj = btDev;
-            handler.sendMessage(message);
+
+            ibtConnect.connectSuccess(btDev);
         } catch (Exception e) {
             Log.e("blueTooth", "...链接失败");
-            try {
-//                getmBluetoothSocket().close();
-                if (mBluetoothSocket != null){
-                    mBluetoothSocket.close();
-                    Constants.bluetoothSocket = null;
-                    handler.sendEmptyMessage(HandlerCode.SOCKET_CLOSE);
-                }
-
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-            e.printStackTrace();
+            baseBTManager.disConnectBlutTooth();
+            ibtConnect.connectClose();
         }
     }
 
-    /**
-     * 关闭连接
-     */
-    public void disConnect() {
-        if (Constants.bluetoothSocket != null && Constants.bluetoothSocket.isConnected()) {
-            try {
-                Constants.bluetoothSocket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
 }

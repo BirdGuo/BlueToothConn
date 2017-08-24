@@ -2,6 +2,7 @@ package com.gxw.bluetoothhelper.managers;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -11,31 +12,66 @@ import com.gxw.bluetoothhelper.bean.BlueToothBean;
 import com.gxw.bluetoothhelper.constant.Constants;
 import com.gxw.bluetoothhelper.utils.MacUtil;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Set;
 
 /**
  * Created by guoxw on 2017/8/21 0021.
  *
- * @auther guoxw
- * @createTime 2017/8/21 0021 17:11
+ * @author guoxw
+ * @createTime 2017 /8/21 0021 17:11
  * @packageName com.gxw.bluetoothhelper.managers
  */
-
 public abstract class BaseBTManager {
 
+    private String TAG = BaseBTManager.class.getName().toString();
+
+    /**
+     * 蓝牙适配器
+     */
     public BluetoothAdapter mAdapter;
     private Context mContext;
 
+    /**
+     * 蓝牙socket
+     */
+    private BluetoothSocket bluetoothSocket;
+
+    /**
+     * 构造器
+     *
+     * @param context
+     *         the context
+     */
     public BaseBTManager(Context context) {
         this.mContext = context;
         this.mAdapter = BluetoothAdapter.getDefaultAdapter();
     }
 
     /**
+     * 设置蓝牙socket
+     *
+     * @param bluetoothSocket
+     *         the bluetooth socket
+     */
+    public void setBluetoothSocket(BluetoothSocket bluetoothSocket) {
+        this.bluetoothSocket = bluetoothSocket;
+    }
+
+    /**
+     * 获取蓝牙socket
+     *
+     * @return the bluetooth socket
+     */
+    public BluetoothSocket getBluetoothSocket() {
+        return bluetoothSocket;
+    }
+
+    /**
      * 获取已配对的蓝牙设备列表
      *
-     * @return deviceHasConnected
+     * @return deviceHasConnected 已经配对过的设备
      */
     public ArrayList<BlueToothBean> getDeviceBonded() {
 
@@ -73,9 +109,6 @@ public abstract class BaseBTManager {
 
     /**
      * 关闭蓝牙
-     * <p>
-     *
-     * @return
      */
     public void closeBlueTooth() {
         //若已打开
@@ -86,10 +119,12 @@ public abstract class BaseBTManager {
 
     /**
      * 是否已连接
+     *
+     * @return true 已连接；false 未连接
      */
     public boolean checkIsConnect() {
 
-        if (Constants.bluetoothSocket != null && Constants.bluetoothSocket.isConnected()) {
+        if (bluetoothSocket != null && bluetoothSocket.isConnected()) {
             return true;
         }
         return false;
@@ -114,7 +149,7 @@ public abstract class BaseBTManager {
     /**
      * 获取本机蓝牙名称
      *
-     * @return deviceName
+     * @return deviceName 设备名称
      */
     public String getBlutToothDeviceName() {
         if (mAdapter != null)
@@ -162,7 +197,7 @@ public abstract class BaseBTManager {
      * The getMacAddress() method of a WifiInfo object and the BluetoothAdapter.getDefaultAdapter().getAddress()
      * method will both return 02:00:00:00:00:00 from now on.
      *
-     * @return
+     * @return bluetooth mac地址
      */
     public String getBluetoothMac() {
         String btMac = "";
@@ -173,6 +208,22 @@ public abstract class BaseBTManager {
             btMac = mAdapter.getAddress();
         }
         return btMac;
+    }
+
+    /**
+     * 断开连接
+     */
+    public void disConnectBlutTooth() {
+
+        try {
+            if (bluetoothSocket != null) {
+                bluetoothSocket.close();
+                bluetoothSocket = null;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     /**
@@ -200,5 +251,27 @@ public abstract class BaseBTManager {
      * 开启客户端
      */
     public abstract void clientConnectToServer();
+
+    /**
+     * 接收消息
+     */
+    public abstract void receiveMessage();
+
+    /**
+     * 发送文本消息
+     *
+     * @param message
+     *         需要发送的文字
+     */
+    public abstract void sendTextMessage(String message);
+
+    /**
+     * 发送文件消息
+     *
+     * @param filePath
+     *         需要发送的文件路径
+     */
+    public abstract void sendFileMessage(String filePath);
+
 
 }

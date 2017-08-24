@@ -11,10 +11,9 @@ import java.io.Reader;
  * Created by guoxw on 2017/8/7 0007.
  *
  * @auther guoxw
- * @createTime 2017/8/7 0007 15:22
+ * @createTime 2017 /8/7 0007 15:22
  * @packageName com.gxw.bluetoothconn.utils
  */
-
 public class MacUtil {
 
 
@@ -24,8 +23,9 @@ public class MacUtil {
      * 但是这个跟手机系统中显示的不一致
      *
      * @param context
+     *         the context
      *
-     * @return
+     * @return mac地址
      */
     public static String getBTMac(Context context) {
         return android.provider.Settings.Secure.getString(context.getContentResolver(), "bluetooth_address");
@@ -34,7 +34,7 @@ public class MacUtil {
     /**
      * 获取手机的MAC地址
      *
-     * @return
+     * @return mac
      */
     public static String getMac() {
         String str = "";
@@ -67,6 +67,17 @@ public class MacUtil {
         return macSerial;
     }
 
+    /**
+     * Load file as string string.
+     *
+     * @param fileName
+     *         the file name
+     *
+     * @return the string
+     *
+     * @throws Exception
+     *         the exception
+     */
     public static String loadFileAsString(String fileName) throws Exception {
         FileReader reader = new FileReader(fileName);
         String text = loadReaderAsString(reader);
@@ -74,6 +85,17 @@ public class MacUtil {
         return text;
     }
 
+    /**
+     * Load reader as string string.
+     *
+     * @param reader
+     *         the reader
+     *
+     * @return the string
+     *
+     * @throws Exception
+     *         the exception
+     */
     public static String loadReaderAsString(Reader reader) throws Exception {
         StringBuilder builder = new StringBuilder();
         char[] buffer = new char[4096];

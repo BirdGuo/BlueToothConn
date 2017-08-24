@@ -1,5 +1,6 @@
 package com.gxw.bluetoothconn;
 
+import android.bluetooth.BluetoothDevice;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
@@ -16,21 +17,22 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.gxw.bluetoothhelper.constant.Constants;
+import com.gxw.bluetoothhelper.BlueToothFactory.BTHelperFactory;
 import com.gxw.bluetoothhelper.constant.HandlerCode;
-import com.gxw.bluetoothhelper.utils.ReceiveMessageUtil;
-import com.gxw.bluetoothhelper.utils.SendMessageUtil;
-
-import java.io.IOException;
+import com.gxw.bluetoothhelper.interfaces.IBTConnect;
+import com.gxw.bluetoothhelper.managers.BTHelperManager;
 
 
-public class DeviceDetailActivity extends AppCompatActivity implements View.OnClickListener {
+public class DeviceDetailActivity extends AppCompatActivity implements View.OnClickListener, IBTConnect {
 
     private String TAG = DeviceDetailActivity.class.getName().toString();
 
     private EditText et_detail;
     private Button btn_detail_send_text, btn_detail_send_file;
     private LinearLayout ll_content;
+
+    private BTHelperFactory btHelperFactory;
+    private BTHelperManager btManager;
 
     private Handler mHandler = new Handler() {
         @Override
@@ -62,6 +64,11 @@ public class DeviceDetailActivity extends AppCompatActivity implements View.OnCl
         setContentView(R.layout.activity_device_detail);
 
         initView();
+
+        btHelperFactory = BTHelperFactory.getInstance();
+        btManager = btHelperFactory.createBTManager(this);
+        btManager.setIbtConnect(this);
+
         initReceive();
 
     }
@@ -80,7 +87,9 @@ public class DeviceDetailActivity extends AppCompatActivity implements View.OnCl
         new Thread(new Runnable() {
             @Override
             public void run() {
-                ReceiveMessageUtil.receiveMessage(mHandler, Constants.bluetoothSocket);
+//                ReceiveMessageUtil.receiveMessage(mHandler, Constants.bluetoothSocket);
+                btManager.receiveMessage();
+
             }
         }).start();
     }
@@ -116,12 +125,14 @@ public class DeviceDetailActivity extends AppCompatActivity implements View.OnCl
         switch (view.getId()) {
             case R.id.btn_detail_send_file:
 
-                SendMessageUtil.sendMessageByFile(Environment.getExternalStorageDirectory() + "/3.png", Constants.bluetoothSocket);
+//                SendMessageUtil.sendMessageByFile(Environment.getExternalStorageDirectory() + "/3.png", Constants.bluetoothSocket);
+                btManager.sendFileMessage(Environment.getExternalStorageDirectory() + "/3.png");
 
                 break;
             case R.id.btn_detail_send_text:
                 if (et_detail.getText().toString().trim().equalsIgnoreCase("")) return;
-                SendMessageUtil.sendMessage(et_detail.getText().toString().trim(), Constants.bluetoothSocket);
+                btManager.sendTextMessage(et_detail.getText().toString().trim());
+//                SendMessageUtil.sendMessage(et_detail.getText().toString().trim(), Constants.bluetoothSocket);
                 ll_content.addView(getRightTextView(et_detail.getText().toString().trim()));
                 et_detail.setText("");
                 break;
@@ -130,23 +141,39 @@ public class DeviceDetailActivity extends AppCompatActivity implements View.OnCl
 
     @Override
     protected void onDestroy() {
-        Log.i(TAG, "-------------onDestroy--------------");
-
-
         super.onDestroy();
     }
 
     @Override
     public void finish() {
-        Log.i(TAG, "-------------finish--------------");
-        try {
-            if (Constants.bluetoothSocket != null) {
-                Constants.bluetoothSocket.close();
-                Constants.bluetoothSocket = null;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        btManager.disConnectBlutTooth();
         super.finish();
+    }
+
+    @Override
+    public void connectSuccess(BluetoothDevice bluetoothDevice) {
+
+    }
+
+    @Override
+    public void connectClose() {
+//        this.finish();
+        mHandler.sendEmptyMessage(HandlerCode.SOCKET_CLOSE);
+    }
+
+    @Override
+    public void receiveTextMessage(String message) {
+        Message msg = new Message();
+        msg.obj = message;
+        msg.what = HandlerCode.MESSAGE_TEXT;
+        mHandler.sendMessage(msg);
+    }
+
+    @Override
+    public void receiveFileMessage(String filePath) {
+        Message msg = new Message();
+        msg.obj = filePath;
+        msg.what = HandlerCode.MESSAGE_TEXT;
+        mHandler.sendMessage(msg);
     }
 }
